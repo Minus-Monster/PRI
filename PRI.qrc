@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>powerofsight.png</file>
+        <file>BASLER-Logo_white.png</file>
+        <file>logo.ico</file>
+    </qresource>
+</RCC>
