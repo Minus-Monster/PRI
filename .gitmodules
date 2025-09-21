@@ -1,0 +1,6 @@
+[submodule "Qylon"]
+	path = Qylon
+	url = git@github.com:Minus-Monster/Qylon.git
+[submodule "MQIT"]
+	path = MQIT
+	url = git@github.com:Minus-Monster/MQIT.git
