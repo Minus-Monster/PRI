@@ -49,39 +49,31 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     // LOAD RECIPE
-
-    // connect(ui->toolButtonRecipe, &QPushButton::clicked, this, [=] {
-    //     const QUrl url = QFileDialog::getOpenFileUrl(this, tr("Load a recipe"), QUrl::fromLocalFile(QDir::homePath()), tr("Recipe Files (*.precipe);;All Files (*)"));
-    //     if (!url.isValid()) return;
-
-    //     const QString path = url.toLocalFile();
-    //     ui->lineEditRecipe->setText(path);
-
-    //     auto *watcher = new QFutureWatcher<bool>(this);
-    //     connect(watcher, &QFutureWatcher<bool>::finished, this, [=] {
-    //         const bool ok = watcher->result();
-
-    //         ui->toolButtonRecipe->setEnabled(true);
-    //         watcher->deleteLater();
-    //         if (ok){
-    //             QMessageBox::information(this, windowTitle(), tr("Recipe loaded successfully."));
-    //         }else{
-    //             QMessageBox::warning(this, windowTitle(), tr("Failed to load the recipe."));
-    //         }
-    //     });
-
-    //     QFuture<bool> fut = QtConcurrent::run([this, path] {
-    //         return vTools->loadRecipe(path);
-    //     });
-    //     watcher->setFuture(fut);
-    // });
-
     connect(ui->toolButtonRecipe, &QPushButton::clicked, this, [=]{
         auto url = QFileDialog::getOpenFileUrl(this, "Load a recipe", QDir::homePath(), "*.precipe");
         if(url.isValid()){
-            ui->lineEditRecipe->setText(url.toLocalFile());
-            QMessageBox::information(this, this->windowTitle(), "Loading the recipe...");
-            vTools->loadRecipe(url.toLocalFile());
+            QMessageBox *box = new QMessageBox(this);
+            box->setWindowTitle(this->windowTitle());
+            box->setText("Load the recipe...");
+            box->setStandardButtons(QMessageBox::NoButton);
+            box->show();
+
+            QTimer::singleShot(100, [=]{
+                auto ok = vTools->loadRecipe(url.toLocalFile());
+                box->hide();
+                box->deleteLater();
+
+                if(ok){
+                    emit ui->toolButtonRefresh->clicked();
+                    ui->lineEditRecipe->setText(url.toLocalFile());
+                    QMessageBox::information(this, windowTitle(), tr("Recipe loaded successfully."));
+                }else{
+                    ui->lineEditRecipe->setText("");
+                    QMessageBox::warning(this, windowTitle(), tr("Failed to load the recipe."));
+
+                }
+            });
+
         }
     });
 
@@ -478,6 +470,10 @@ void MainWindow::builderRecipe()
 void MainWindow::checkRecipe()
 {
     int circleMeasurementCount = 23;
+    int sampleSegmentValue = 500;
+    double sampleSegmentWidthValue = 4.1;
+    double sampleToleValue = 5.0;
+    int shapeTolValue = 150;
 
     auto newRecipe = vTools->getRecipe();
     for(int i=1; i<=circleMeasurementCount; ++i){
@@ -487,21 +483,20 @@ void MainWindow::checkRecipe()
         try{
             auto col = newRecipe->GetParameters().Get(IntegerParameterName((recipeName + "Column").toStdString().c_str()));
             auto row = newRecipe->GetParameters().Get(IntegerParameterName((recipeName + "Row").toStdString().c_str()));
+            // The length from outer to inner circle
             auto shapeTor = newRecipe->GetParameters().Get(FloatParameterName((recipeName + "ShapeTolerance").toStdString().c_str()));
-            auto radius = newRecipe->GetParameters().Get(IntegerParameterName((recipeName + "Radius").toStdString().c_str()));
 
-            if(i <= 5){
-                row.TrySetValue(500);
-            }else if(i <= 9){
-                row.TrySetValue(1350);
-            }else if(i <=14){
-                row.TrySetValue(2256);
-            }else if(i <=18){
-
-            }else{
-
-            }
-
+            auto sample = newRecipe->GetParameters().Get(IntegerParameterName((recipeName + "NumberSampleSegments").toStdString().c_str()));
+            auto sampleWidth = newRecipe->GetParameters().Get(FloatParameterName((recipeName + "SampleSegmentWidth").toStdString().c_str()));
+            auto sampleTor = newRecipe->GetParameters().Get(FloatParameterName((recipeName + "SampleTolerance").toStdString().c_str()));
+            qDebug() << name
+                     <<"\nShape Tole:" << shapeTor.GetValue()
+                     << "\nSampleSegments:" << sample.GetValue()
+                     << "\nSampleWidth:" << sampleWidth.GetValue()
+                     << "\nSampleTor:" << sampleTor.GetValue() ;
+            qDebug() << "Edited:" << sample.TrySetValue(sampleSegmentValue) << sampleWidth.TrySetValue(sampleSegmentWidthValue)
+                     << sampleTor.TrySetValue(sampleToleValue) << shapeTor.TrySetValue(shapeTolValue);
+            qDebug() << "\n\n";
 
         }catch(const GenericException &e){ qDebug()<< e.what();}
     }
@@ -511,12 +506,12 @@ void MainWindow::checkRecipe()
     //     auto params = recipe->GetParameters().GetAllParameterNames();
     //     for(auto par: params){
 
-    //         auto var = recipe->GetParameters().Get(par);
-    //         if(var.IsValid()){
-    //             auto str1 = var.GetInfo(EParameterInfo::ParameterInfo_Name);
-    //             auto str2 = var.GetInfo(EParameterInfo::ParameterInfo_DisplayName);
-    //             auto str3 = var.GetInfo(EParameterInfo::ParameterInfo_ToolTip);
-    //             auto str4 = var.GetInfo(EParameterInfo::ParameterInfo_Description);
+        //         auto var = recipe->GetParameters().Get(par);
+        //         if(var.IsValid()){
+        //             auto str1 = var.GetInfo(EParameterInfo::ParameterInfo_Name);
+        //             auto str2 = var.GetInfo(EParameterInfo::ParameterInfo_DisplayName);
+        //             auto str3 = var.GetInfo(EParameterInfo::ParameterInfo_ToolTip);
+        //             auto str4 = var.GetInfo(EParameterInfo::ParameterInfo_Description);
 
     //             qDebug() << str1 << "|" << str2 << "\n" << str4 << "\n" << str3;
     //             qWarning()<< var.GetAccessMode();

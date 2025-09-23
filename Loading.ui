@@ -18,7 +18,10 @@
     <normaloff>:/Resources/Icon.png</normaloff>:/Resources/Icon.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color:rgb(20, 72, 126)</string>
+   <string notr="true">QWidget#Loading{
+	background-color:rgb(20, 72, 126);
+}
+color: black;</string>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">

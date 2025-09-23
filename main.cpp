@@ -5,6 +5,7 @@
 #include "Qylon.h"
 #include <QDir>
 #include <QStyleFactory>
+#include <QMessageBox>
 #include <QtConcurrent/QtConcurrent>
 int main(int argc, char *argv[])
 {
@@ -21,11 +22,11 @@ int main(int argc, char *argv[])
 
     Loading l;
     l.setName("Pixel Resolution Calculator");
-    l.setVersion("Version 1.0");
+    l.setVersion("Version 1.0.1");
     l.show();
     QApplication::processEvents();
-    l.raise();
-    l.activateWindow();
+    // l.raise();
+    // l.activateWindow();
 
     MainWindow w;
     w.setStyleSheet(loadQSS(":/Resources/Style.qss"));
@@ -53,6 +54,7 @@ int main(int argc, char *argv[])
                 l.update("Loading succeeded.", 98);
             } else {
                 l.update("Failed to load the recipe.", 98);
+                if(!ok) QMessageBox::warning(&l, w.windowTitle(), "Failed to load the default recipe.\nLoad the recipe manually.");
             }
             l.update("Finished loading all components.", 100);
             QTimer::singleShot(250, [&l, &w] {
