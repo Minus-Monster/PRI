@@ -19,14 +19,10 @@ int main(int argc, char *argv[])
         QTextStream stream(&file);
         return stream.readAll();
     };
-
-    Loading l;
-    l.setName("Pixel Resolution Calculator");
-    l.setVersion("Version 1.0.1");
+    Loading l(nullptr, "Pixel Resolution Calculator", "Version 1.0.1");
     l.show();
-    QApplication::processEvents();
-    // l.raise();
-    // l.activateWindow();
+    // QApplication::processEvents();
+
 
     MainWindow w;
     w.setStyleSheet(loadQSS(":/Resources/Style.qss"));
@@ -40,11 +36,10 @@ int main(int argc, char *argv[])
     QTimer::singleShot(500, [&l, &q, &w]{
         l.update("Loaded the Qylon module.", 90);
         auto vtool = q.addVTools();
-
         l.update("Loading the vTools module...", 92);
+
         w.addVTools(vtool);
         l.update("Loading the recipe...", 95);
-
 
         auto watcher = new QFutureWatcher<bool>(&w);
         QObject::connect(watcher, &QFutureWatcher<bool>::finished, [&l, &w, watcher] {
@@ -54,14 +49,14 @@ int main(int argc, char *argv[])
                 l.update("Loading succeeded.", 98);
             } else {
                 l.update("Failed to load the recipe.", 98);
-                if(!ok) QMessageBox::warning(&l, w.windowTitle(), "Failed to load the default recipe.\nLoad the recipe manually.");
             }
             l.update("Finished loading all components.", 100);
-            QTimer::singleShot(250, [&l, &w] {
+            QTimer::singleShot(250, [&l, &w, &ok] {
                 w.activateWindow();
                 w.show();
                 w.raise();
                 l.close();
+                if(!ok) QMessageBox::warning(&w, w.windowTitle(), "Failed to load the default recipe.\nLoad the recipe manually.");
             });
             watcher->deleteLater();
         });
@@ -72,23 +67,6 @@ int main(int argc, char *argv[])
         });
         watcher->setFuture(future);
 
-
-        // Recipe Loading
-        /*
-        if(vtool->loadRecipe("C:/Users/minwoo/Projects/PRI/PRI.precipe")){
-        // if(vtool->loadRecipe("PRI.precipe")){
-            w.initialize();
-            l.update("Loading succeeded.", 95);
-        }else{
-            l.update("Failed to load the recipe.", 95);
-        }
-
-
-
-
-
-
-
         l.update("Finished loading all components.", 100);
         QTimer::singleShot(250, [&l, &w]{
             w.activateWindow();
@@ -96,7 +74,6 @@ int main(int argc, char *argv[])
             w.raise();
             l.close();
         });
-        */
     });
 
     return a.exec();

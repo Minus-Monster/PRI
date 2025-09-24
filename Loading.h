@@ -12,7 +12,7 @@ class Loading : public QWidget
     Q_OBJECT
 
 public:
-    explicit Loading(QWidget *parent = nullptr);
+    explicit Loading(QWidget *parent = nullptr, QString name="", QString version="");
     ~Loading();
 
     void setName(QString name);
