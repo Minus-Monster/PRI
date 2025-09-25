@@ -80,7 +80,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     // SINGLE MODE
     connect(ui->toolButtonSingle, &QPushButton::clicked, this, [=]{
-        checkRecipe();
         vTools->startRecipe(1);
         ui->statusbar->showMessage("Start the recipe with a single mode.", 3000);
     });

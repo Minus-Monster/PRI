@@ -69,14 +69,6 @@ int main(int argc, char *argv[])
             return vtool->loadRecipe(recipePath);
         });
         watcher->setFuture(future);
-
-        l.update("Finished loading all components.", 100);
-        QTimer::singleShot(250, [&l, &w]{
-            w.activateWindow();
-            w.show();
-            w.raise();
-            l.close();
-        });
     });
 
     return a.exec();
