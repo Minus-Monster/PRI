@@ -29,11 +29,11 @@ MainWindow::MainWindow(QWidget *parent)
         auto *box = new QMessageBox(this);
         box->setWindowTitle(windowTitle());
         box->setTextFormat(Qt::RichText);
-        box->setText("<b>Pixel Resolution Calculator</b><br>"
-                     "<I>Built with pylon 25.08 and Qt 6.7.2</I><br><br>"
-                     "This program is designed to measure circular objects in an image and convert their pixel dimensions into millimeters.<br>"
-                     "<b>Basler does not guarantee the accuracy of any results or calculations.</b><br><br>"
-                     "This program is intended for internal use only to verify system environments.");
+        box->setText(QString("<b>Pixel Resolution Calculator %1</b><br>"
+                             "<I>Built with pylon 25.08 and Qt 6.7.2</I><br><br>"
+                             "This program is designed to measure circular objects in an image and convert their pixel dimensions into millimeters.<br>"
+                             "<b>Basler does not guarantee the accuracy of any results or calculations.</b><br><br>"
+                             "This program is intended for internal use only to verify system environments.").arg(version));
 
         QPixmap px(":/Resources/Logo.png");
         if (!px.isNull()) {
@@ -55,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
             QMessageBox *box = new QMessageBox(this);
             box->setWindowTitle(this->windowTitle());
             box->setText("Load the recipe...");
+            box->setIcon(QMessageBox::Icon::Information);
             box->setStandardButtons(QMessageBox::NoButton);
             box->show();
 
@@ -79,6 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // SINGLE MODE
     connect(ui->toolButtonSingle, &QPushButton::clicked, this, [=]{
+        checkRecipe();
         vTools->startRecipe(1);
         ui->statusbar->showMessage("Start the recipe with a single mode.", 3000);
     });
@@ -469,58 +471,58 @@ void MainWindow::builderRecipe()
 
 void MainWindow::checkRecipe()
 {
-    int circleMeasurementCount = 23;
-    int sampleSegmentValue = 500;
-    double sampleSegmentWidthValue = 4.1;
-    double sampleToleValue = 5.0;
-    int shapeTolValue = 150;
+    // int circleMeasurementCount = 23;
+    // int sampleSegmentValue = 500;
+    // double sampleSegmentWidthValue = 4.1;
+    // double sampleToleValue = 5.0;
+    // int shapeTolValue = 150;
 
-    auto newRecipe = vTools->getRecipe();
-    for(int i=1; i<=circleMeasurementCount; ++i){
-        QString name = "CircleMeasurementsPro" + QString::number(i);
-        auto recipeName = name + "/@vTool/";
+    // auto newRecipe = vTools->getRecipe();
+    // for(int i=1; i<=circleMeasurementCount; ++i){
+    //     QString name = "CircleMeasurementsPro" + QString::number(i);
+    //     auto recipeName = name + "/@vTool/";
 
-        try{
-            auto col = newRecipe->GetParameters().Get(IntegerParameterName((recipeName + "Column").toStdString().c_str()));
-            auto row = newRecipe->GetParameters().Get(IntegerParameterName((recipeName + "Row").toStdString().c_str()));
-            // The length from outer to inner circle
-            auto shapeTor = newRecipe->GetParameters().Get(FloatParameterName((recipeName + "ShapeTolerance").toStdString().c_str()));
+    //     try{
+    //         auto col = newRecipe->GetParameters().Get(IntegerParameterName((recipeName + "Column").toStdString().c_str()));
+    //         auto row = newRecipe->GetParameters().Get(IntegerParameterName((recipeName + "Row").toStdString().c_str()));
+    //         // The length from outer to inner circle
+    //         auto shapeTor = newRecipe->GetParameters().Get(FloatParameterName((recipeName + "ShapeTolerance").toStdString().c_str()));
 
-            auto sample = newRecipe->GetParameters().Get(IntegerParameterName((recipeName + "NumberSampleSegments").toStdString().c_str()));
-            auto sampleWidth = newRecipe->GetParameters().Get(FloatParameterName((recipeName + "SampleSegmentWidth").toStdString().c_str()));
-            auto sampleTor = newRecipe->GetParameters().Get(FloatParameterName((recipeName + "SampleTolerance").toStdString().c_str()));
-            qDebug() << name
-                     <<"\nShape Tole:" << shapeTor.GetValue()
-                     << "\nSampleSegments:" << sample.GetValue()
-                     << "\nSampleWidth:" << sampleWidth.GetValue()
-                     << "\nSampleTor:" << sampleTor.GetValue() ;
-            qDebug() << "Edited:" << sample.TrySetValue(sampleSegmentValue) << sampleWidth.TrySetValue(sampleSegmentWidthValue)
-                     << sampleTor.TrySetValue(sampleToleValue) << shapeTor.TrySetValue(shapeTolValue);
-            qDebug() << "\n\n";
+    //         auto sample = newRecipe->GetParameters().Get(IntegerParameterName((recipeName + "NumberSampleSegments").toStdString().c_str()));
+    //         auto sampleWidth = newRecipe->GetParameters().Get(FloatParameterName((recipeName + "SampleSegmentWidth").toStdString().c_str()));
+    //         auto sampleTor = newRecipe->GetParameters().Get(FloatParameterName((recipeName + "SampleTolerance").toStdString().c_str()));
+    //         qDebug() << name
+    //                  <<"\nShape Tole:" << shapeTor.GetValue()
+    //                  << "\nSampleSegments:" << sample.GetValue()
+    //                  << "\nSampleWidth:" << sampleWidth.GetValue()
+    //                  << "\nSampleTor:" << sampleTor.GetValue() ;
+    //         qDebug() << "Edited:" << sample.TrySetValue(sampleSegmentValue) << sampleWidth.TrySetValue(sampleSegmentWidthValue)
+    //                  << sampleTor.TrySetValue(sampleToleValue) << shapeTor.TrySetValue(shapeTolValue);
+    //         qDebug() << "\n\n";
 
-        }catch(const GenericException &e){ qDebug()<< e.what();}
-    }
-
-    // try{
-    //     auto recipe = vTools->getRecipe();
-    //     auto params = recipe->GetParameters().GetAllParameterNames();
-    //     for(auto par: params){
-
-        //         auto var = recipe->GetParameters().Get(par);
-        //         if(var.IsValid()){
-        //             auto str1 = var.GetInfo(EParameterInfo::ParameterInfo_Name);
-        //             auto str2 = var.GetInfo(EParameterInfo::ParameterInfo_DisplayName);
-        //             auto str3 = var.GetInfo(EParameterInfo::ParameterInfo_ToolTip);
-        //             auto str4 = var.GetInfo(EParameterInfo::ParameterInfo_Description);
-
-    //             qDebug() << str1 << "|" << str2 << "\n" << str4 << "\n" << str3;
-    //             qWarning()<< var.GetAccessMode();
-
-    //         }else{
-    //             qDebug() << "var is not valid";
-    //         }
-    //     }
-    // }catch(const GenericException &e){
-    //     qDebug()<< e.what();
+    //     }catch(const GenericException &e){ qDebug()<< e.what();}
     // }
+
+    try{
+        auto recipe = vTools->getRecipe();
+        auto params = recipe->GetParameters().GetAllParameterNames();
+
+        for(auto par: params){
+            auto var = recipe->GetParameters().Get(par);
+            if(var.IsValid()){
+                auto str1 = var.GetInfo(EParameterInfo::ParameterInfo_Name);
+                auto str2 = var.GetInfo(EParameterInfo::ParameterInfo_DisplayName);
+                auto str3 = var.GetInfo(EParameterInfo::ParameterInfo_ToolTip);
+
+                qDebug() << str1 << "|" << str2 <<  "\n" << str3;
+            }
+        }
+    }catch(const GenericException &e){
+        qDebug()<< e.what();
+    }
+}
+
+void MainWindow::setVersion(QString vers)
+{
+    version = vers;
 }

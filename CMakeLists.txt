@@ -78,3 +78,18 @@ target_link_libraries(${PROJECT_NAME} PUBLIC MQIT)
 option(WITH_PYLON "Add pylon SDK for Qylon" ON)
 add_subdirectory("Qylon" Qylon) # writing your current MQIT directory path
 target_link_libraries(${PROJECT_NAME} PUBLIC Qylon)
+
+
+execute_process(
+    COMMAND git rev-parse --short HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+set(BUILD_VERSION "${GIT_HASH}")
+configure_file(
+    ${CMAKE_SOURCE_DIR}/Version.h.in
+    ${CMAKE_BINARY_DIR}/Version.h
+    @ONLY
+)
+include_directories(${CMAKE_BINARY_DIR})

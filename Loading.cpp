@@ -20,6 +20,9 @@ Loading::Loading(QWidget *parent, QString name, QString version)
             background-color:rgb(20, 72, 126);
             color:white;
         }
+        QLabel{
+            color:white;
+        }
     )");
 }
 
@@ -35,7 +38,7 @@ void Loading::setName(QString name)
 
 void Loading::setVersion(QString version)
 {
-    ui->version->setText(version);
+    ui->version->setText("Version: " + version);
 }
 
 

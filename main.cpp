@@ -7,8 +7,10 @@
 #include <QStyleFactory>
 #include <QMessageBox>
 #include <QtConcurrent/QtConcurrent>
+#include "Version.h"
 int main(int argc, char *argv[])
 {
+    QString version = QString("1.0.1");
     Q_INIT_RESOURCE(Resources);
     QApplication a(argc, argv);
     auto loadQSS = [](QString filePath) -> QString{
@@ -19,12 +21,13 @@ int main(int argc, char *argv[])
         QTextStream stream(&file);
         return stream.readAll();
     };
-    Loading l(nullptr, "Pixel Resolution Calculator", "Version 1.0.1");
+
+    MainWindow w;
+    Loading l(&w, "Pixel Resolution Calculator", version);
     l.show();
     // QApplication::processEvents();
 
-
-    MainWindow w;
+    w.setVersion(version + " " + QString(BUILD_VERSION).toUpper());
     w.setStyleSheet(loadQSS(":/Resources/Style.qss"));
 
     Qylon::Qylon q;

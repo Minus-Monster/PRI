@@ -28,6 +28,7 @@ public:
 
     void builderRecipe();
     void checkRecipe();
+    void setVersion(QString vers);
     // QGraphicsEllipseItem* leftTop;
     // QGraphicsEllipseItem* rightTop;
     // QGraphicsEllipseItem* center;
@@ -39,6 +40,7 @@ public:
 private:
     Ui::MainWindow *ui;
     Qylon::vTools *vTools;
+    QString version="";
 
 
 

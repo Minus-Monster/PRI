@@ -244,10 +244,10 @@ QProgressBar::chunk{
   <widget class="QLabel" name="version">
    <property name="geometry">
     <rect>
-     <x>270</x>
+     <x>10</x>
      <y>90</y>
-     <width>81</width>
-     <height>16</height>
+     <width>341</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="font">
