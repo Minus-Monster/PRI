@@ -20,7 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setSizeGrip(false);
     ui->graphicsView->setLogo(true);
     ui->graphicsView->setLogoImage(QImage(":/Resources/Logo.png"));
-
+    auto cross = ui->graphicsView->getToolBarItems().at(4);
+    auto setting = ui->graphicsView->getToolBarItems().at(5);
+    ui->graphicsView->removeAction(cross);
+    ui->graphicsView->removeAction(setting);
     connect(ui->actionSettings, &QAction::toggled, ui->settings, &QDockWidget::setVisible);
     connect(ui->settings, &QDockWidget::visibilityChanged, ui->actionSettings, &QAction::setChecked);
     connect(ui->actionStatistics, &QAction::toggled, ui->statistics, &QDockWidget::setVisible);
@@ -148,102 +151,64 @@ void MainWindow::addVTools(Qylon::vTools *v)
         if(images.size() >0){
             auto current = images.first().second;
             ui->graphicsView->setImage(convertPylonImageToQImage(current));
-
-            auto leftTop = new QGraphicsEllipseItem;
-            auto rightTop = new QGraphicsEllipseItem;
-            auto center = new QGraphicsEllipseItem;
-            auto leftBottom = new QGraphicsEllipseItem;
-            auto rightBottom = new QGraphicsEllipseItem;
-            QList<QGraphicsEllipseItem*> items;
-            items << leftTop << rightTop << center << leftBottom << rightBottom;
-
-            QBrush brush;
-            brush.setColor(QColor(0,255,0,175));
-            brush.setStyle(Qt::SolidPattern);
-
-            for(auto cur : items){
-                cur->setBrush(brush);
-                cur->setPen(Qt::NoPen);
-            }
-
-            double width = 700;
-            double height = 700;
-            double distance = 878;
-            double x = (current.GetWidth() / 2) - (width/2);
-            double y = (current.GetHeight() / 2) - (height/2);
-
-            leftTop->setRect(x - distance*2, y - distance*2, width,height);
-            rightTop->setRect(x + distance*2, y - distance*2, width,height);
-            center->setRect(x, y, width, height);
-            leftBottom->setRect(x - distance*2, y + distance*2, width,height);
-            rightBottom->setRect(x + distance*2, y + distance*2, width,height);
-
-            ui->graphicsView->addGraphicsItem(static_cast<QGraphicsItem*>(leftTop));
-            ui->graphicsView->addGraphicsItem(static_cast<QGraphicsItem*>(rightTop));
-            ui->graphicsView->addGraphicsItem(static_cast<QGraphicsItem*>(center));
-            ui->graphicsView->addGraphicsItem(static_cast<QGraphicsItem*>(leftBottom));
-            ui->graphicsView->addGraphicsItem(static_cast<QGraphicsItem*>(rightBottom));
+            drawOverlay(current.GetWidth(), current.GetHeight());
         }
 
         auto strings = result.strings;
         if(!strings.empty()){
+            table->setRowCount(23);
+            // Estimated
+            double estPixres = 2.74/ui->doubleSpinBoxMag->value();
+            for(int i=0; i< 23; ++i){
+                auto c0 = new QTableWidgetItem("N/A");
+                auto c1 = new QTableWidgetItem("N/A");
+                auto c2 = new QTableWidgetItem("N/A");
+                auto c3 = new QTableWidgetItem(QString::number(estPixres));
+                auto c4 = new QTableWidgetItem("N/A");
+                c0->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+                c1->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+                c2->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+                c3->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+                c4->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+                table->setItem(i, 0, c0); // Circle
+                table->setItem(i, 1, c1); // Diameter
+                table->setItem(i, 2, c2); // Pixres
+                table->setItem(i, 3, c3); // Estimated
+                table->setItem(i, 4, c4); // Error
+            }
+
             for(auto str: strings){
-                // qDebug() << str;
                 if(str.contains("Circle_px")){
-                    auto start = str.indexOf("[");
-                    auto end = str.indexOf("]", start);
-                    if(start == -1 || end == -1) qDebug() << "Failed to find data";
-                    QString raw = str.mid(start+1, end-start-1);
-                    auto values = raw.split(",", Qt::SkipEmptyParts);
+                    QRegularExpression reC(R"(Circle_px(\d+)=CenterXY-Radius\[([\d\.]+),([\d\.]+),([\d\.]+)\])");
+                    QRegularExpressionMatch match = reC.match(str);
 
-                    auto *c0 = new QTableWidgetItem();
-                    auto *c1 = new QTableWidgetItem();
-                    auto *c3 = new QTableWidgetItem();
-                    auto *c4 = new QTableWidgetItem();
-
-                    c0->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-                    c1->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-                    c3->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-                    c4->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-
-                    const int row = table->rowCount();
-                    table->insertRow(row);
-
-                    double estPixres = 2.74/ui->doubleSpinBoxMag->value();
-                    if(values.size() == 3){
-                        auto diameter = values[2].toDouble()*2;
-                        double convertedValue = (ui->doubleSpinBoxDiameter->value() / diameter)*1000;
-                        c0->setText(QString::number(diameter));
-                        c1->setText(QString::number(convertedValue));
+                    if (match.hasMatch()) {
+                        int index = match.captured(1).toInt();
+                        double radius = match.captured(4).toDouble();
+                        double diameter = radius * 2;
+                        double convertedValue = (ui->doubleSpinBoxDiameter->value() / diameter) * 1000;
+                        table->item(index-1, 1)->setText(QString::number(diameter));
+                        table->item(index-1, 2)->setText(QString::number(convertedValue));
                         double error = std::abs(estPixres - convertedValue);
-                        double percentageError = (error/convertedValue)*100;
-                        c4->setText(QString::number(percentageError));
-                    }else{
-                        c0->setText("N/A");
-                        c1->setText("N/A");
-                        c4->setText("N/A");
+                        double percentageError = (error / convertedValue) * 100;
+                        table->item(index-1, 4)->setText(QString::number(percentageError));
                     }
-                    c3->setText(QString::number(estPixres));
-                    table->setItem(row, 1, c0);            // Ø (px)
-                    table->setItem(row, 2, c1);            // Pix-Res. (μm/px)
-                    table->setItem(row, 3, c3);            // Estimated
-                    table->setItem(row, 4, c4);            // Error
                 }
                 if(str.contains("Score")){
-                    auto equal = str.indexOf("=");
-                    QString scoreValue = str.mid(equal + 1);
-                    bool numeric = false;
-                    double val = scoreValue.toDouble(&numeric);
-                    auto *c2 = new QTableWidgetItem;
-                    if(numeric){
-                        double val = scoreValue.toDouble() * 100;
-                        c2->setText(scoreValue);
-                    }else{
-                        c2->setText("N/A");
-                    }
-                    c2->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-                    table->setItem(lastScoreRow++, 0, c2);   // Score
+                    QRegularExpression re(R"(Score(\d+)=([+-]?\d*\.?\d+))");
+                    QRegularExpressionMatch scoreMatch = re.match(str);
+                    if(scoreMatch.hasMatch()){
+                        int index = scoreMatch.captured(1).toInt();
+                        QString scoreValue = scoreMatch.captured(2);
 
+                        bool numeric = false;
+                        double val = scoreValue.toDouble(&numeric);
+
+                        if(numeric){
+                            table->item(index-1, 0)->setText(QString::number(val));
+                        }
+                    }
                 }
             }
         }
@@ -257,6 +222,7 @@ void MainWindow::addVTools(Qylon::vTools *v)
             brush.setColor(QColor(255,0,0,80));
             brush.setStyle(Qt::SolidPattern);
             ellipse->setBrush(brush);
+            ellipse->setPen(Qt::NoPen);
 
             ui->graphicsView->addGraphicsItem(items.at(i).second);
         }
@@ -422,6 +388,45 @@ QStringList MainWindow::dataCollection()
     }
 
     return QStringList();
+}
+
+void MainWindow::drawOverlay(int width, int height)
+{
+
+    auto leftTop = new QGraphicsEllipseItem;
+    auto rightTop = new QGraphicsEllipseItem;
+    auto center = new QGraphicsEllipseItem;
+    auto leftBottom = new QGraphicsEllipseItem;
+    auto rightBottom = new QGraphicsEllipseItem;
+    QList<QGraphicsEllipseItem*> items;
+    items << leftTop << rightTop << center << leftBottom << rightBottom;
+
+    QBrush brush;
+    brush.setColor(QColor(0,255,0,175));
+    brush.setStyle(Qt::SolidPattern);
+
+    for(auto cur : items){
+        cur->setBrush(brush);
+        cur->setPen(Qt::NoPen);
+    }
+
+    double c_width = 700;
+    double c_height = 700;
+    double distance = 878;
+    double x = (width / 2) - (c_width/2);
+    double y = (height / 2) - (c_height/2);
+
+    leftTop->setRect(x - distance*2, y - distance*2, c_width,c_height);
+    rightTop->setRect(x + distance*2, y - distance*2, c_width,c_height);
+    center->setRect(x, y, c_width, c_height);
+    leftBottom->setRect(x - distance*2, y + distance*2, c_width,c_height);
+    rightBottom->setRect(x + distance*2, y + distance*2, c_width,c_height);
+
+    ui->graphicsView->addGraphicsItem(static_cast<QGraphicsItem*>(leftTop));
+    ui->graphicsView->addGraphicsItem(static_cast<QGraphicsItem*>(rightTop));
+    ui->graphicsView->addGraphicsItem(static_cast<QGraphicsItem*>(center));
+    ui->graphicsView->addGraphicsItem(static_cast<QGraphicsItem*>(leftBottom));
+    ui->graphicsView->addGraphicsItem(static_cast<QGraphicsItem*>(rightBottom));
 }
 
 void MainWindow::builderRecipe()

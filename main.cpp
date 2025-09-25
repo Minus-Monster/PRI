@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
                 l.update("Failed to load the recipe.", 98);
             }
             l.update("Finished loading all components.", 100);
-            QTimer::singleShot(250, [&l, &w, &ok] {
+            QTimer::singleShot(250, [=, &l, &w] {
                 w.activateWindow();
                 w.show();
                 w.raise();

@@ -26,6 +26,8 @@ public:
     int addTableWidget(QString serialNum);
     QStringList dataCollection();
 
+    void drawOverlay(int width, int height);
+
     void builderRecipe();
     void checkRecipe();
     void setVersion(QString vers);
