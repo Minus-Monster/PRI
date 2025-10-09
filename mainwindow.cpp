@@ -5,7 +5,7 @@
 #include "Qylon/Camera/Camera.h"
 #include <QFutureWatcher>
 #include <QtConcurrent/QtConcurrent>
-
+#include <QClipboard>
 #define FILE_NAME "Pixel_Cal_Data.csv"
 
 using namespace Pylon;
@@ -126,6 +126,38 @@ MainWindow::MainWindow(QWidget *parent)
         dataCollection();
     });
 
+    connect(ui->toolButtonCopy, &QPushButton::clicked, this, [=]{
+
+        int tabIdx = ui->tabWidget->currentIndex();
+        auto *table = qobject_cast<QTableWidget*>(ui->tabWidget->widget(tabIdx));
+        if (!table) return;
+
+        QString copiedText;
+
+        QStringList headers;
+        headers << ui->tabWidget->tabText(ui->tabWidget->currentIndex());
+        for (int col = 0; col < table->columnCount(); ++col) {
+            QString headerText = table->horizontalHeaderItem(col)->text();
+            headerText.replace('\n', ' ');
+            headers << headerText;
+        }
+        copiedText += headers.join('\t') + '\n';
+
+        for (int row = 0; row < table->rowCount(); ++row) {
+            QStringList rowData;
+            rowData << QString::number(row + 1);
+            for (int col = 0; col < table->columnCount(); ++col) {
+                auto *item = table->item(row, col);
+                rowData << (item ? item->text() : "");
+            }
+            copiedText += rowData.join('\t');
+            if (row != table->rowCount() - 1)
+                copiedText += '\n';
+        }
+
+        QApplication::clipboard()->setText(copiedText);
+        ui->statusbar->showMessage("Copied this current sheet data.", 3000);
+    });
 }
 
 MainWindow::~MainWindow()
