@@ -10,7 +10,7 @@
 #include "Version.h"
 int main(int argc, char *argv[])
 {
-    QString version = QString("1.1");
+    QString version = QString("1.1.2");
     Q_INIT_RESOURCE(Resources);
     QApplication a(argc, argv);
     auto loadQSS = [](QString filePath) -> QString{

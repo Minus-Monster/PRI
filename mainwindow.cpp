@@ -373,6 +373,7 @@ int MainWindow::addTableWidget(QString serialNum)
     return idx;
 }
 
+// Export CSV
 QStringList MainWindow::dataCollection()
 {
     QStringList csvLines;
@@ -381,7 +382,6 @@ QStringList MainWindow::dataCollection()
     for(int i=0; i< ui->tabWidget->tabBar()->count(); ++i){
         auto *table = qobject_cast<QTableWidget*>(ui->tabWidget->widget(i));
 
-        qDebug() << "Table:" << ui->tabWidget->tabText(i);
         QList<double> pixresList;
         for(int j=0; j < table->rowCount(); ++j){
             auto data = table->item(j, 2)->text();
@@ -397,7 +397,7 @@ QStringList MainWindow::dataCollection()
         }
 
         QString serialNum = ui->tabWidget->tabText(i);
-        csvLines << QString("%1,%2").arg(serialNum).arg(QString::number(avg, 'f', 3));
+        csvLines << QString("%1,%2").arg(serialNum).arg(QString::number(avg, 'f', 4));
     }
 
 
