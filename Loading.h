@@ -2,6 +2,7 @@
 #define LOADING_H
 
 #include <QWidget>
+#include <QTimer>
 
 namespace Ui {
 class Loading;
@@ -21,6 +22,8 @@ public:
 
 private:
     Ui::Loading *ui;
+    QTimer* colorTimer;
+    int colorIndex = 0;
 };
 
 #endif // LOADING_H
