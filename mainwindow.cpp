@@ -125,7 +125,34 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->toolButtonExport, &QPushButton::clicked, this, [=]{
         dataCollection();
     });
+    report = new GenerateTestReport(this);
+    connect(ui->actionExport_Test_Report, &QAction::triggered, this, [=]{
+        qDebug() << "Test Report triggered";
+        if(ui->tabWidget->count() == 0){
+            qDebug() << "Error occurred";
 
+            return;
+        }
+        auto cameraName = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
+
+        // report.setCameraInformation(ui->tabWidget->currentWidget(), 1.);
+        auto *table = qobject_cast<QTableWidget*>(ui->tabWidget->widget(ui->tabWidget->currentIndex()));
+        QList<double> pixresList;
+        for(int j=0; j < table->rowCount(); ++j){
+            auto data = table->item(j, 2)->text();
+            if(data.isEmpty() || data == "N/A") continue;
+            pixresList.push_back(table->item(j, 2)->text().toDouble());
+        }
+        double avg = 0.0;
+        if (!pixresList.isEmpty()) {
+            double sum = std::accumulate(pixresList.begin(), pixresList.end(), 0.0);
+            avg = sum / pixresList.size();
+        }
+
+        report->setCameraInformation(cameraName.toInt(), avg);
+        report->setMagnification(ui->doubleSpinBoxMag->value());
+        report->show();
+    });
     connect(ui->toolButtonCopy, &QPushButton::clicked, this, [=]{
 
         int tabIdx = ui->tabWidget->currentIndex();

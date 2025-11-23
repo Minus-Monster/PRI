@@ -14,7 +14,7 @@
    <string>Pixel Resolution Calculator</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="Qylon/Resources.qrc">
+   <iconset resource="MQIT/Resources/Resources.qrc">
     <normaloff>:/Resources/Icon.png</normaloff>:/Resources/Icon.png</iconset>
   </property>
   <property name="toolButtonStyle">
@@ -84,6 +84,13 @@
     <addaction name="actionAbout_Pixel_Resolution_Calculator"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionExport_Test_Report"/>
+   </widget>
+   <addaction name="menuFile"/>
    <addaction name="menuWindow"/>
    <addaction name="menuAbout"/>
   </widget>
@@ -161,8 +168,8 @@
                  <string>...</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="Qylon/Resources.qrc">
-                  <normaloff>:/Resources/Icon/icons8-opened-folder-48.png</normaloff>:/Resources/Icon/icons8-opened-folder-48.png</iconset>
+                 <iconset resource="MQIT/Resources/Resources.qrc">
+                  <normaloff>:/Resources/Icons/icons8-opened-folder-48.png</normaloff>:/Resources/Icons/icons8-opened-folder-48.png</iconset>
                 </property>
                </widget>
               </item>
@@ -179,8 +186,8 @@
                  <string>...</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="Qylon/Resources.qrc">
-                  <normaloff>:/Resources/Icon/icons8-opened-folder-48.png</normaloff>:/Resources/Icon/icons8-opened-folder-48.png</iconset>
+                 <iconset resource="MQIT/Resources/Resources.qrc">
+                  <normaloff>:/Resources/Icons/icons8-opened-folder-48.png</normaloff>:/Resources/Icons/icons8-opened-folder-48.png</iconset>
                 </property>
                </widget>
               </item>
@@ -253,8 +260,8 @@
                    <string>...</string>
                   </property>
                   <property name="icon">
-                   <iconset resource="Qylon/Resources.qrc">
-                    <normaloff>:/Resources/Icon/icons8-refresh-48.png</normaloff>:/Resources/Icon/icons8-refresh-48.png</iconset>
+                   <iconset resource="MQIT/Resources/Resources.qrc">
+                    <normaloff>:/Resources/Icons/icons8-refresh-48.png</normaloff>:/Resources/Icons/icons8-refresh-48.png</iconset>
                   </property>
                   <property name="arrowType">
                    <enum>Qt::ArrowType::NoArrow</enum>
@@ -355,8 +362,8 @@
           <string>Single</string>
          </property>
          <property name="icon">
-          <iconset resource="Qylon/Resources.qrc">
-           <normaloff>:/Resources/Icon/icons8-camera-48.png</normaloff>:/Resources/Icon/icons8-camera-48.png</iconset>
+          <iconset resource="MQIT/Resources/Resources.qrc">
+           <normaloff>:/Resources/Icons/icons8-camera-48.png</normaloff>:/Resources/Icons/icons8-camera-48.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -384,9 +391,8 @@
           <string>Live</string>
          </property>
          <property name="icon">
-          <iconset resource="Qylon/Resources.qrc">
-           <normaloff>:/Resources/Icon/icons8-cameras-48.png</normaloff>
-           <activeon>:/Resources/Icon/icons8-pause-48.png</activeon>:/Resources/Icon/icons8-cameras-48.png</iconset>
+          <iconset resource="MQIT/Resources/Resources.qrc">
+           <normaloff>:/Resources/Icons/icons8-cameras-48.png</normaloff>:/Resources/Icons/icons8-cameras-48.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -414,8 +420,8 @@
           <string>Export</string>
          </property>
          <property name="icon">
-          <iconset resource="Qylon/Resources.qrc">
-           <normaloff>:/Resources/Icon/icons8-export-csv-48.png</normaloff>:/Resources/Icon/icons8-export-csv-48.png</iconset>
+          <iconset resource="MQIT/Resources/Resources.qrc">
+           <normaloff>:/Resources/Icons/icons8-export-csv-48.png</normaloff>:/Resources/Icons/icons8-export-csv-48.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -440,8 +446,8 @@
           <string>Copy data</string>
          </property>
          <property name="icon">
-          <iconset resource="Qylon/Resources.qrc">
-           <normaloff>:/Resources/Icon/icons8-copy-48.png</normaloff>:/Resources/Icon/icons8-copy-48.png</iconset>
+          <iconset resource="MQIT/Resources/Resources.qrc">
+           <normaloff>:/Resources/Icons/icons8-copy-48.png</normaloff>:/Resources/Icons/icons8-copy-48.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -511,6 +517,11 @@
     <string>About This</string>
    </property>
   </action>
+  <action name="actionExport_Test_Report">
+   <property name="text">
+    <string>Export Test Report</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -520,7 +531,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="Qylon/Resources.qrc"/>
+  <include location="MQIT/Resources/Resources.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -26,6 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Loading.h Loading.cpp Loading.ui
         PRI.qrc
         app_icon.rc
+        GenerateTestReport.h GenerateTestReport.cpp GenerateTestReport.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PRI APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

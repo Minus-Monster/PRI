@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "Qylon/vTools/vTools.h"
+#include "GenerateTestReport.h"
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -43,7 +44,7 @@ private:
     Ui::MainWindow *ui;
     Qylon::vTools *vTools;
     QString version="";
-
+    GenerateTestReport *report;
 
 
 };
