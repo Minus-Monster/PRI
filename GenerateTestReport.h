@@ -17,7 +17,7 @@ public:
 
     void setCameraInformation(int serial, double pixres);
     void setMagnification(double mag);
-    void generateFile(QString path);
+    bool generateFile(QString path);
 
 private:
     Ui::GenerateTestReport *ui;

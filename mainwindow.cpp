@@ -20,8 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setSizeGrip(false);
     ui->graphicsView->setLogo(true);
     ui->graphicsView->setLogoImage(QImage(":/Resources/Logo.png"));
+
     auto cross = ui->graphicsView->getToolBarItems().at(4);
     auto setting = ui->graphicsView->getToolBarItems().at(5);
+
     ui->graphicsView->removeAction(cross);
     ui->graphicsView->removeAction(setting);
     connect(ui->actionSettings, &QAction::toggled, ui->settings, &QDockWidget::setVisible);
@@ -74,7 +76,6 @@ MainWindow::MainWindow(QWidget *parent)
                 }else{
                     ui->lineEditRecipe->setText("");
                     QMessageBox::warning(this, windowTitle(), tr("Failed to load the recipe."));
-
                 }
             });
 
@@ -123,19 +124,16 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
     connect(ui->toolButtonExport, &QPushButton::clicked, this, [=]{
-        dataCollection();
+        exportToCSV();
     });
     report = new GenerateTestReport(this);
     connect(ui->actionExport_Test_Report, &QAction::triggered, this, [=]{
-        qDebug() << "Test Report triggered";
         if(ui->tabWidget->count() == 0){
-            qDebug() << "Error occurred";
-
+            QMessageBox::warning(this, report->windowTitle(), "There's no data to generate a test report.");
             return;
         }
         auto cameraName = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
 
-        // report.setCameraInformation(ui->tabWidget->currentWidget(), 1.);
         auto *table = qobject_cast<QTableWidget*>(ui->tabWidget->widget(ui->tabWidget->currentIndex()));
         QList<double> pixresList;
         for(int j=0; j < table->rowCount(); ++j){
@@ -271,7 +269,6 @@ void MainWindow::addVTools(Qylon::vTools *v)
                 }
             }
         }
-
         auto items = result.items;
         for(int i=0; i< items.size(); ++i){
             if(items.at(i).first.contains("Region")) continue;
@@ -401,7 +398,7 @@ int MainWindow::addTableWidget(QString serialNum)
 }
 
 // Export CSV
-QStringList MainWindow::dataCollection()
+bool MainWindow::exportToCSV()
 {
     QStringList csvLines;
     csvLines << "Camera_Serial_Num,Pixel_Resolution(um/px)"; // Header
@@ -427,7 +424,6 @@ QStringList MainWindow::dataCollection()
         csvLines << QString("%1,%2").arg(serialNum).arg(QString::number(avg, 'f', 4));
     }
 
-
     QString dirPath = ui->lineEditCsv->text();
     QString fileName = QString::fromStdString(FILE_NAME);
 
@@ -442,11 +438,12 @@ QStringList MainWindow::dataCollection()
         file.close();
         QMessageBox::information(this, this->windowTitle(), "Successfully save the csv file.\n" + savePath);
     } else {
-        qDebug() << "CSV Failed:" << savePath;
+        qDebug() << "CSV saving Failed:" << savePath;
         QMessageBox::warning(this, this->windowTitle(), "Failed to save the csv file.\n" + savePath);
+        return false;
     }
 
-    return QStringList();
+    return true;
 }
 
 void MainWindow::drawOverlay(int width, int height)

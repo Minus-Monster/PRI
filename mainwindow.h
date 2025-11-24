@@ -25,7 +25,7 @@ public:
     bool setCurrentCamera(QString cameraSerial);
 
     int addTableWidget(QString serialNum);
-    QStringList dataCollection();
+    bool exportToCSV();
 
     void drawOverlay(int width, int height);
 
